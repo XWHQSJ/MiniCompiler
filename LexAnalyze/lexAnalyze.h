@@ -1,8 +1,10 @@
+#pragma once
 #ifndef LEXANALYZE_H
 #define LEXANALYZE_H
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
+#include <string>
 
 //单词符号的编码
 #define $SYMBOL		1
@@ -39,34 +41,20 @@
 
 
 const static int RESERVED_COUNT = 7;	//关键字数
-const static int LETTER_COUNT = 26;     //字母数
-const static int DIGIT_COUNT = 10;      //数字数
-
 
 //二元数结构体
 typedef struct Word_Struct
 {
-	int number;				//字符编码
-	int position;			//字符位置
+	int chCode;			//字符编码
+	int chPost;			//字符位置
 }WORDS;
 
 
 //关键字表
-char *keyWords[RESERVED_COUNT] = { "int","if","else","while","for","read","write" };
-
-//字母表
-char *letters[LETTER_COUNT] = { 'a','b','c','d','e','f','g','h','i','j','k','l',
-									'm','n','o','p','q','r','s','t','u','v','w',
-									'x','y','z','A','B','C','D','E','F','G','H',
-									'I','J','K','L','M','N','O','P','Q','R','S',
-									'U','V','W','X','Y','Z' };
-
-//数字表
-char *digits[DIGIT_COUNT] = { '0','1','2','3','4','5','6','7','8','9};
-
+std::string keyWords[RESERVED_COUNT] = { "int","if","else","while","for","read","write" };
 
 //判断是否为空
-bool is_space(char );
+bool is_space();
 
 //读入一个字符函数
 void lex_getchar();
@@ -96,12 +84,12 @@ int lex_symbol();
 int lex_constant();
 
 //返回二元数函数
-WORDS word_return(int ,int );
+WORDS word_return(int, int);
 
 //出错处理函数
-void lex_error();
+void lex_error(int);
 
 //词法分析器函数
-WORDS lexAnalyze(WORDS words);
+WORDS lex_analyze(WORDS words);
 
 #endif // !LEXANALYZE_H

@@ -1,0 +1,4 @@
+int a = a + b;
+cout > c,d
+e <= f == g
+while h != k - 9

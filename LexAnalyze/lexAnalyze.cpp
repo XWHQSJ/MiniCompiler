@@ -1,17 +1,17 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <vector>
+#include <iostream>
 #include <string>
+#include <map>
+#include <fstream>
 
 #include "lexAnalyze.h"
 
-char lex_ch = ' ';								//全局字符变量用于存放最新存入的字符
-std::string lex_token = NULL;					//字符数组，用于存放已读入的字符序列
-std::vector<std::string> symbols = NULL;		//符号表
-std::vector<int> constants = NULL;				//常数表
-int lex_i = 0;									//字符计数
+using namespace std;
 
+char lex_ch;								//全局字符变量用于存放最新存入的字符
+std::string lex_token;							//字符数组，用于存放已读入的字符序列
+std::map<std::string, int> symbols;		        //符号表
+std::map<std::string, int> constants;		    //常数表
+int lex_i = 0;									//字符计数
 
 FILE *filePtr;
 
@@ -20,7 +20,7 @@ FILE *filePtr;
 //判断字符是否为空白字符
 bool is_space()
 {
-	if(lex_ch == NUL || lex_ch == BS || lex_ch == HT || lex_ch == LF)
+	if (lex_ch == NUL || lex_ch == BS || lex_ch == HT || lex_ch == LF || lex_ch == CR)
 	{
 		return true;
 	}
@@ -35,7 +35,7 @@ void lex_getchar()
 
 	if (lex_ch == EOF)
 	{
-		printf("File is end.\n");
+		std::cout << "File is end.\n" << std::endl;
 		exit(1);
 	}
 }
@@ -59,15 +59,10 @@ void lex_concat()
 //判断字母函数
 bool is_letter()
 {
-	int num = 0;
-	while (num < LETTER_COUNT)
+	if ((lex_ch >= 'a' && lex_ch <= 'z') ||
+		(lex_ch >= 'A' && lex_ch <= 'Z'))
 	{
-		if (lex_ch == letters[num])
-		{
-			return true;
-		}
-
-		num++;
+		return true;
 	}
 
 	return false;
@@ -76,15 +71,9 @@ bool is_letter()
 //判断数字函数
 bool is_digit()
 {
-	int num = 0;
-	while (num < DIGIT_COUNT)
+	if (lex_ch >= '0' && lex_ch <= '9')
 	{
-		if (lex_ch == digits[num])
-		{
-			return true;
-		}
-
-		num++;
+		return true;
 	}
 
 	return false;
@@ -106,7 +95,7 @@ int lex_reserve()
 	int num = 0;
 	while (num < RESERVED_COUNT)
 	{
-		if (strcmp(keyWords[num], lex_token) == 0)
+		if (keyWords[num] == lex_token)
 		{
 			return (num + 3);
 		}
@@ -120,38 +109,64 @@ int lex_reserve()
 //处理标识符函数
 int lex_symbol()
 {
+	//WORDS words;
 
+	std::map<std::string, int>::iterator sym_iter;
+	sym_iter = symbols.find(lex_token);
+
+	if (sym_iter != symbols.end())
+	{
+		return sym_iter->second;
+	}
+	else
+	{
+		symbols.insert(std::pair<std::string, int>(lex_token, symbols.size() + 1));
+
+		return (symbols.size() + 1);
+	}
 }
 
 //常数存入常数表函数
 int lex_constant()
 {
+	std::map<std::string, int>::iterator const_iter;
+	const_iter = constants.find(lex_token);
 
+	if (const_iter != constants.end())
+	{
+		return const_iter->second;
+	}
+	else
+	{
+		constants.insert(std::pair<std::string, int>(lex_token, constants.size() + 1));
+
+		return (constants.size() + 1);
+	}
 }
 
 //返回二元数函数
-WORDS word_return(int lex_number,int lex_value)
+WORDS word_return(int lex_number, int lex_value)
 {
 	WORDS words;
-	words.number = lex_number;
-	words.position = lex_value;
+	words.chCode = lex_number;
+	words.chPost = lex_value;
 
 	return words;
 }
 
 //出错处理函数
-void lex_error(int count)
+void lex_error(int errCode)
 {
-	switch (count)
+	switch (errCode)
 	{
 	case 0:				//character is valid
-		printf("Your input character is invalid.\n");
+		std::cout << "Your input character is invalid.\n" << std::endl;
 		break;
 	case 1:				//file is empty
 		fseek(filePtr, 0, SEEK_END);
 		if (ftell(filePtr) == 0)
 		{
-			printf("File is empty.\n");
+			std::cout << "File is empty.\n" << std::endl;;
 			exit(1);
 		}
 		else
@@ -160,21 +175,21 @@ void lex_error(int count)
 		}
 		break;
 	case 2:				//load file error
-		printf("File can't open.\n");
+		std::cout << "File can't open.\n" << std::endl;
 		break;
 	case 3:				//close file error
-		printf("File can't close.\n");
+		std::cout << "Syntax: lexAnalyze [file]\n" << std::endl;
 		break;
 	}
 }
 
 //词法分析器函数
-WORDS lexAnalyze(WORDS words)
+WORDS lex_analyze()
 {
-	lex_token = NULL;
+	WORDS words;
+	lex_token = " ";
 	int lex_number = 0;
 	int lex_value = 0;
-	lex_i = 0;
 
 	//读入第一个字符
 	lex_getchar();
@@ -214,7 +229,7 @@ WORDS lexAnalyze(WORDS words)
 			lex_concat();
 			lex_getchar();
 		}
-		
+
 		lex_retract();
 
 		lex_number = lex_reserve();
@@ -226,7 +241,7 @@ WORDS lexAnalyze(WORDS words)
 		else
 		{
 			lex_value = lex_symbol();
-			words = word_return($SYMBOL,lex_value);
+			words = word_return($SYMBOL, lex_value);
 		}
 		break;
 
@@ -268,17 +283,12 @@ WORDS lexAnalyze(WORDS words)
 		lex_getchar();
 		if (lex_ch == '=')
 		{
-			words = word_return($GE, 0);
+			words = word_return($GE, 0);  //返回'>='符号
 		}
 		else
 		{
 			lex_retract();
-			words = word_return($GE, 0);  //返回'>'符号
-		}
-		else
-		{
-			lex_retract();
-			words = word_return($G, 0);   //返回'>='符号
+			words = word_return($G, 0);   //返回'>'符号
 		}
 		break;
 	case '=':
@@ -301,7 +311,7 @@ WORDS lexAnalyze(WORDS words)
 		}
 		else
 		{
-			lex_error();
+			lex_error(0);
 		}
 		break;
 	case '+':
@@ -329,14 +339,46 @@ WORDS lexAnalyze(WORDS words)
 		words = word_return($SEM, 0);
 		break;
 	default:
-		lex_error();
+		lex_error(0);
 	}
 
+	return words;
 }
 
-int main(int agrc, char *argv[])
+int main(int argc,char *argv[])
 {
+	WORDS words;
 
+	const char* file = argv[1];
+	filePtr = fopen(file, "rb");
+
+	//处理输入文件
+	switch (argc)
+	{
+	case 1:              
+		filePtr = stdin;
+		break;
+	case 2:
+		if (filePtr == NULL)
+		{
+			lex_error(2);
+			exit(1);
+		}
+		break;
+	case 3:
+		lex_error(3);
+		exit(0);
+		break;
+	}
+
+	while ((lex_ch = fgetc(filePtr)) != EOF)
+	{
+		words = lex_analyze();
+		std::cout << words.chCode << " : " << words.chPost << std::endl;
+	}
+
+
+	fclose(filePtr);
 
 	return 0;
 }
