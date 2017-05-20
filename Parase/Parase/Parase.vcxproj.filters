@@ -15,12 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="syntaxAnalyze.cpp">
+    <ClCompile Include="paraser.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="syntaxAnalyze.h">
+    <ClInclude Include="paraser.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

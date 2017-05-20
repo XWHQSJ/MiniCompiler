@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{DA3472E8-A800-4A04-B03A-3367EF4A1445}</ProjectGuid>
+    <ProjectGuid>{38D40236-5F1B-41DD-AF21-C8EEE3BC6629}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Syntaxer</RootNamespace>
+    <RootNamespace>Parase</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -142,10 +142,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="syntaxAnalyze.cpp" />
+    <ClCompile Include="paraser.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="syntaxAnalyze.h" />
+    <ClInclude Include="paraser.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
