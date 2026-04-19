@@ -8,28 +8,17 @@
 
 A tiny compiler for a Pascal-like mini-language. Covers the full pipeline from lexical analysis through to execution on a stack-based virtual machine.
 
-[**Try online**](https://XWHQSJ.github.io/MiniCompiler/playground.html) | [Language spec](docs/language_spec.md) | [Examples](examples/README.md)
+[Language spec](docs/language_spec.md) | [Examples](examples/README.md)
 
-## Compiler Pipeline
+## How It Works
 
-```
-source.pas
-   |   lex_pascal
-   v
-Token stream
-   |   Parser (recursive descent)
-   v
-AST (Abstract Syntax Tree)
-   |   SemanticAnalyzer
-   v
-Checked AST
-   |   IRGenerator
-   v
-Three-address IR (quads)
-   |   VM
-   v
-Program output
-```
+<p align="center">
+  <img src="docs/images/pipeline.svg" alt="Compiler pipeline diagram" width="960"/>
+</p>
+
+The compiler implements a complete classical pipeline: source code is tokenized by the **lexer**, transformed into an AST by the **recursive-descent parser**, validated by the **semantic analyzer**, lowered to **three-address code** (quads), and executed by a **stack-based virtual machine**.
+
+Each stage is self-contained under `src/` and can be inspected independently via CLI flags (`--tokens`, `--ast`, `--ir`, `--run`).
 
 ## Quick Start
 
@@ -48,15 +37,57 @@ echo "2 10" | ./build/minicc examples/power.pas --run
 
 ## Example Programs
 
+<p align="center">
+  <img src="docs/images/sample_run.svg" alt="Terminal showing sample program executions" width="720"/>
+</p>
+
 | Program | Description | Input | Output |
 |---------|-------------|-------|--------|
 | `factorial.pas` | Recursive n! | `5` | `120` |
-| `sieve.pas` | Primes up to N | `10` | `2 3 5 7` |
+| `sieve.pas` | Primes up to N | `20` | `2 3 5 7 11 13 17 19` |
 | `sort.pas` | Sort 3 integers | `3 1 2` | `1 2 3` |
 | `gcd.pas` | Euclidean GCD | `48 18` | `6` |
 | `power.pas` | x^n | `2 10` | `1024` |
 
+Real outputs captured from the compiler are stored in [`docs/`](docs/):
+[sieve](docs/sample_output_sieve.txt) |
+[factorial](docs/sample_output_factorial.txt) |
+[sort](docs/sample_output_sort.txt) |
+[gcd](docs/sample_output_gcd.txt) |
+[power](docs/sample_output_power.txt)
+
 See [examples/README.md](examples/README.md) for full input/output tables.
+
+## AST Visualization
+
+The compiler can emit the AST as XML (`--ast` or default mode). Below is the tree structure for `factorial.pas`:
+
+<p align="center">
+  <img src="docs/images/ast_example.svg" alt="AST tree for factorial program" width="800"/>
+</p>
+
+```bash
+# Generate the XML AST yourself
+./build/minicc examples/factorial.pas
+```
+
+The AST captures declarations, control flow, and expressions as a typed tree that the semantic analyzer validates before lowering to IR.
+
+## Playground Preview
+
+<p align="center">
+  <img src="docs/images/playground_preview.svg" alt="Playground mockup" width="900"/>
+</p>
+
+The web playground compiles the compiler to WASM so it runs entirely in the browser. It is not yet deployed -- to build and serve it locally:
+
+```bash
+emcmake cmake -S . -B build-web
+emmake make -C build-web minicc
+# then open docs/playground.html
+```
+
+Once the gh-pages WASM artifacts are built, the playground will be available at `https://xwhqsj.github.io/MiniCompiler/playground.html`.
 
 ## Directory Layout
 
