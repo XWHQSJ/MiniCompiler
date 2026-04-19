@@ -117,6 +117,14 @@ int VM::run() {
                 break;
             }
 
+            case Op::MOD: {
+                int a = get_var(q.src1);
+                int b = get_var(q.src2);
+                if (b == 0) throw std::runtime_error("VM: modulo by zero");
+                set_var(q.dst, a % b);
+                break;
+            }
+
             case Op::LT: {
                 int a = get_var(q.src1);
                 int b = get_var(q.src2);

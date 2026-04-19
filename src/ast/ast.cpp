@@ -13,6 +13,7 @@ const char* node_kind_name(NodeKind k) {
         case NodeKind::StmtList:   return "StmtList";
         case NodeKind::Assign:     return "Assign";
         case NodeKind::If:         return "If";
+        case NodeKind::While:      return "While";
         case NodeKind::Read:       return "Read";
         case NodeKind::Write:      return "Write";
         case NodeKind::BinOp:      return "BinOp";

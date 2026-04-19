@@ -30,6 +30,10 @@ void SemanticAnalyzer::visit(const AstNode* node) {
             if (node->children.size() >= 2) visit(node->children[1].get());
             if (node->children.size() >= 3) visit(node->children[2].get());
             break;
+        case NodeKind::While:
+            if (node->children.size() >= 1) check_expr(node->children[0].get());
+            if (node->children.size() >= 2) visit(node->children[1].get());
+            break;
         case NodeKind::DeclList:
         case NodeKind::StmtList:
         case NodeKind::FuncBody:

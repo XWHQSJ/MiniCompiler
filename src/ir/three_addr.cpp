@@ -9,6 +9,7 @@ const char* op_name(Op op) {
         case Op::SUB:        return "SUB";
         case Op::MUL:        return "MUL";
         case Op::DIV:        return "DIV";
+        case Op::MOD:        return "MOD";
         case Op::ASSIGN:     return "ASSIGN";
         case Op::LOAD_CONST: return "LOAD_CONST";
         case Op::JMP:        return "JMP";
@@ -141,6 +142,23 @@ void IRGenerator::gen_stmt(const AstNode* node) {
             break;
         }
 
+        case NodeKind::While: {
+            // children: [0]=condition, [1]=body_stmt
+            std::string loop_label = new_label();
+            std::string end_label = new_label();
+
+            emit(Op::LABEL, loop_label);
+            if (node->children.size() >= 1) {
+                gen_condition(node->children[0].get(), end_label);
+            }
+            if (node->children.size() >= 2) {
+                gen_stmt(node->children[1].get());
+            }
+            emit(Op::JMP, loop_label);
+            emit(Op::LABEL, end_label);
+            break;
+        }
+
         default:
             // For any nested structure, try children
             for (const auto& ch : node->children) {
@@ -194,7 +212,9 @@ std::string IRGenerator::gen_expr(const AstNode* node) {
             Op bin_op = Op::ADD;
             if (node->text == "-") bin_op = Op::SUB;
             else if (node->text == "*") bin_op = Op::MUL;
-            else if (node->text == "/") bin_op = Op::DIV;
+            else if (node->text == "/" || node->text == "div") bin_op = Op::DIV;
+            else if (node->text == "mod") bin_op = Op::MOD;
+            else if (node->text == "+") bin_op = Op::ADD;
 
             emit(bin_op, tmp, left, right);
             return tmp;

@@ -9,7 +9,7 @@
 namespace minicc {
 
 enum class Op {
-    ADD, SUB, MUL, DIV,
+    ADD, SUB, MUL, DIV, MOD,
     ASSIGN, LOAD_CONST,
     JMP, JZ, LABEL,
     CALL, RET,

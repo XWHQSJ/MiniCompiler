@@ -18,6 +18,7 @@ enum class NodeKind {
     StmtList,
     Assign,
     If,
+    While,
     Read,
     Write,
     BinOp,

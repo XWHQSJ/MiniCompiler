@@ -45,6 +45,7 @@ private:
     AstPtr parse_read_stmt();
     AstPtr parse_write_stmt();
     AstPtr parse_if_stmt();
+    AstPtr parse_while_stmt();
     AstPtr parse_expr();
     AstPtr parse_term();
     AstPtr parse_factor();

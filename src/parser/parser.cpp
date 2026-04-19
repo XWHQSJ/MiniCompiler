@@ -215,12 +215,22 @@ AstPtr Parser::parse_stmt_list() {
     return list;
 }
 
-// stmt -> read_stmt | write_stmt | if_stmt | assign_stmt
+// stmt -> read_stmt | write_stmt | if_stmt | while_stmt | begin_end_block | assign_stmt
 AstPtr Parser::parse_stmt() {
     skip_eoln();
     if (check(TokenKind::READ))  return parse_read_stmt();
     if (check(TokenKind::WRITE)) return parse_write_stmt();
     if (check(TokenKind::IF))    return parse_if_stmt();
+    if (check(TokenKind::WHILE)) return parse_while_stmt();
+    if (check(TokenKind::BEGIN)) {
+        // compound statement: 'begin' stmt_list 'end'
+        advance();
+        skip_eoln();
+        auto block = parse_stmt_list();
+        skip_eoln();
+        expect(TokenKind::END, "at end of compound statement");
+        return block;
+    }
     if (check(TokenKind::SYMBOL)) return parse_assign_stmt();
 
     error("expected statement");
@@ -309,6 +319,23 @@ AstPtr Parser::parse_if_stmt() {
     return node;
 }
 
+// while -> 'while' condition 'do' stmt
+AstPtr Parser::parse_while_stmt() {
+    int ln = peek().line;
+    advance(); // 'while'
+    skip_eoln();
+
+    auto node = make_node(NodeKind::While, "", ln);
+    node->add(parse_condition());
+
+    skip_eoln();
+    expect(TokenKind::DO, "after while condition");
+    skip_eoln();
+
+    node->add(parse_stmt());
+    return node;
+}
+
 // condition -> expr relop expr
 AstPtr Parser::parse_condition() {
     auto left = parse_expr();
@@ -335,19 +362,18 @@ AstPtr Parser::parse_condition() {
 }
 
 // expr -> term (('+' | '-') term)*
-// Note: this language has '-' but not '+' as a token, so we handle '-' only
 AstPtr Parser::parse_expr() {
     skip_eoln();
     auto left = parse_term();
 
     while (true) {
         skip_eoln();
-        if (check(TokenKind::SUB)) {
+        if (check(TokenKind::SUB) || check(TokenKind::ADD)) {
             int ln = peek().line;
-            advance();
+            std::string op_text = advance().text;
             skip_eoln();
             auto right = parse_term();
-            auto binop = make_node(NodeKind::BinOp, "-", ln);
+            auto binop = make_node(NodeKind::BinOp, op_text, ln);
             binop->add(std::move(left));
             binop->add(std::move(right));
             left = std::move(binop);
@@ -358,19 +384,19 @@ AstPtr Parser::parse_expr() {
     return left;
 }
 
-// term -> factor ('*' factor)*
+// term -> factor (('*' | 'div' | 'mod') factor)*
 AstPtr Parser::parse_term() {
     skip_eoln();
     auto left = parse_factor();
 
     while (true) {
         skip_eoln();
-        if (check(TokenKind::MUL)) {
+        if (check(TokenKind::MUL) || check(TokenKind::DIV) || check(TokenKind::MOD)) {
             int ln = peek().line;
-            advance();
+            std::string op_text = advance().text;
             skip_eoln();
             auto right = parse_factor();
-            auto binop = make_node(NodeKind::BinOp, "*", ln);
+            auto binop = make_node(NodeKind::BinOp, op_text, ln);
             binop->add(std::move(left));
             binop->add(std::move(right));
             left = std::move(binop);

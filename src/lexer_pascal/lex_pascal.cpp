@@ -12,6 +12,13 @@ static const char* KEYWORDS[] = {
 };
 static const int KEYWORD_COUNT = 9;
 
+static const struct { const char* word; TokenKind kind; } EXTRA_KEYWORDS[] = {
+    {"while", TokenKind::WHILE},
+    {"do",    TokenKind::DO},
+    {"div",   TokenKind::DIV},
+    {"mod",   TokenKind::MOD},
+};
+
 const char* token_kind_name(TokenKind k) {
     switch (k) {
         case TokenKind::BEGIN: return "begin";
@@ -23,6 +30,8 @@ const char* token_kind_name(TokenKind k) {
         case TokenKind::FUNCTION: return "function";
         case TokenKind::READ: return "read";
         case TokenKind::WRITE: return "write";
+        case TokenKind::WHILE: return "while";
+        case TokenKind::DO: return "do";
         case TokenKind::SYMBOL: return "SYMBOL";
         case TokenKind::CONSTANT: return "CONSTANT";
         case TokenKind::EQ: return "=";
@@ -31,12 +40,16 @@ const char* token_kind_name(TokenKind k) {
         case TokenKind::LT: return "<";
         case TokenKind::GE: return ">=";
         case TokenKind::GT: return ">";
+        case TokenKind::ADD: return "+";
         case TokenKind::SUB: return "-";
         case TokenKind::MUL: return "*";
+        case TokenKind::DIV: return "div";
+        case TokenKind::MOD: return "mod";
         case TokenKind::ASSIGN: return ":=";
         case TokenKind::LPAREN: return "(";
         case TokenKind::RPAREN: return ")";
         case TokenKind::SEMI: return ";";
+        case TokenKind::COMMA: return ",";
         case TokenKind::EOLN: return "EOLN";
         case TokenKind::END_OF_FILE: return "EOF";
         default: return "?";
@@ -48,6 +61,9 @@ static TokenKind lookup_keyword(const std::string& s) {
         if (s == KEYWORDS[i]) {
             return static_cast<TokenKind>(i + 1);
         }
+    }
+    for (const auto& ek : EXTRA_KEYWORDS) {
+        if (s == ek.word) return ek.kind;
     }
     return TokenKind::SYMBOL;
 }
@@ -76,7 +92,8 @@ std::vector<Token> lex_pascal(const std::string& source) {
         if (std::isalpha(static_cast<unsigned char>(ch))) {
             std::string word;
             while (pos < len && (std::isalpha(static_cast<unsigned char>(source[pos]))
-                                 || std::isdigit(static_cast<unsigned char>(source[pos])))) {
+                                 || std::isdigit(static_cast<unsigned char>(source[pos]))
+                                 || source[pos] == '_')) {
                 word.push_back(source[pos]);
                 pos++;
             }
@@ -132,8 +149,16 @@ std::vector<Token> lex_pascal(const std::string& source) {
                 tokens.push_back({TokenKind::SUB, "-", line});
                 pos++;
                 break;
+            case '+':
+                tokens.push_back({TokenKind::ADD, "+", line});
+                pos++;
+                break;
             case '*':
                 tokens.push_back({TokenKind::MUL, "*", line});
+                pos++;
+                break;
+            case ',':
+                tokens.push_back({TokenKind::COMMA, ",", line});
                 pos++;
                 break;
             case '(':

@@ -13,7 +13,9 @@ enum class TokenKind {
     EQ = 12, NE = 13, LE = 14, LT = 15, GE = 16, GT = 17,
     SUB = 18, MUL = 19, ASSIGN = 20,
     LPAREN = 21, RPAREN = 22, SEMI = 23,
-    EOLN = 24, END_OF_FILE = 25
+    EOLN = 24, END_OF_FILE = 25,
+    ADD = 26,
+    WHILE = 27, DO = 28, COMMA = 29, DIV = 30, MOD = 31
 };
 
 struct Token {
