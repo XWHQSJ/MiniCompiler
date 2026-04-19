@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build-and-test:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, macos-14]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build
+        run: cmake --build build -j$(nproc 2>/dev/null || sysctl -n hw.ncpu)
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+  sanitizers:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        sanitizer: [address, undefined]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure with ${{ matrix.sanitizer }} sanitizer
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_FLAGS="-fsanitize=${{ matrix.sanitizer }} -fno-omit-frame-pointer" \
+            -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=${{ matrix.sanitizer }}"
+
+      - name: Build
+        run: cmake --build build -j$(nproc)
+
+      - name: Test under ${{ matrix.sanitizer }}
+        run: ctest --test-dir build --output-on-failure
+
+  fuzz:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install clang
+        run: sudo apt-get update && sudo apt-get install -y clang
+
+      - name: Configure fuzz build
+        run: |
+          CC=clang CXX=clang++ cmake -S . -B build-fuzz \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DENABLE_FUZZ=ON \
+            -DMINICC_BUILD_TESTS=OFF
+
+      - name: Build fuzz targets
+        run: cmake --build build-fuzz -j$(nproc) --target fuzz_lexer fuzz_parser
+
+      - name: Fuzz lexer (60s)
+        run: |
+          mkdir -p corpus/lexer
+          timeout 60 ./build-fuzz/fuzz_lexer corpus/lexer || true
+
+      - name: Fuzz parser (60s)
+        run: |
+          mkdir -p corpus/parser
+          timeout 60 ./build-fuzz/fuzz_parser corpus/parser || true
+
+      - name: Upload crashes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzz-crashes
+          path: |
+            crash-*
+            leak-*
+            timeout-*
+          if-no-files-found: ignore
