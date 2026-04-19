@@ -124,17 +124,15 @@ string doDefine(string str, string input, string::iterator st)
 			st++;
 		}
 
-		string::size_type tmp = input.find(str0);
-
-		int z = (int)str1.length();
-		for (int n = 0; n < z; n++)
+		string::size_type pos = input.find(str0);
+		while (pos != string::npos)
 		{
-			input[tmp + n] = str1[n];
-			str0[n] = str1[n];
+			input.replace(pos, str0.length(), str1);
+			pos = input.find(str0, pos + str1.length());
 		}
 		return input;
 	}
-	return NULL;
+	return "";
 }
 
 
