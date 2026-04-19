@@ -68,6 +68,7 @@ if(MINICC_BUILD_TESTS)
         tests/parser_test.cpp
         tests/ir_test.cpp
         tests/vm_test.cpp
+        tests/examples_test.cpp
     )
     target_link_libraries(minicc_tests PRIVATE minicc_core GTest::gtest_main)
     target_include_directories(minicc_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -76,4 +77,23 @@ if(MINICC_BUILD_TESTS)
     gtest_discover_tests(minicc_tests
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
+endif()
+
+# ---------------------------------------------------------------
+# Fuzz targets (requires clang with -fsanitize=fuzzer)
+# ---------------------------------------------------------------
+option(ENABLE_FUZZ "Build fuzz targets (requires clang)" OFF)
+
+if(ENABLE_FUZZ)
+    add_executable(fuzz_lexer fuzz/fuzz_lexer.cpp)
+    target_link_libraries(fuzz_lexer PRIVATE minicc_core)
+    target_include_directories(fuzz_lexer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_compile_options(fuzz_lexer PRIVATE -fsanitize=fuzzer,address,undefined)
+    target_link_options(fuzz_lexer PRIVATE -fsanitize=fuzzer,address,undefined)
+
+    add_executable(fuzz_parser fuzz/fuzz_parser.cpp)
+    target_link_libraries(fuzz_parser PRIVATE minicc_core)
+    target_include_directories(fuzz_parser PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_compile_options(fuzz_parser PRIVATE -fsanitize=fuzzer,address,undefined)
+    target_link_options(fuzz_parser PRIVATE -fsanitize=fuzzer,address,undefined)
 endif()
