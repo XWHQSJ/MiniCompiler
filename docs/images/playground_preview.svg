@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="'Segoe UI',system-ui,-apple-system,sans-serif">
+  <defs>
+    <linearGradient id="pbg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Window chrome -->
+  <rect width="900" height="520" rx="10" fill="url(#pbg)"/>
+  <rect width="900" height="40" rx="10" fill="#0f3460"/>
+  <rect y="30" width="900" height="10" fill="#0f3460"/>
+
+  <!-- Traffic lights -->
+  <circle cx="20" cy="20" r="6" fill="#ff5f57"/>
+  <circle cx="40" cy="20" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="20" r="6" fill="#28c840"/>
+
+  <!-- URL bar -->
+  <rect x="200" y="8" width="500" height="24" rx="4" fill="#1a1a2e"/>
+  <text x="220" y="25" fill="#64748b" font-size="11" font-family="'SF Mono',monospace">xwhqsj.github.io/MiniCompiler/playground.html</text>
+
+  <!-- Header bar -->
+  <rect x="0" y="40" width="900" height="36" fill="#0a1628"/>
+  <text x="24" y="63" fill="#e2e8f0" font-size="14" font-weight="600">MiniCompiler Playground</text>
+  <text x="220" y="63" fill="#64748b" font-size="11">Pascal-like mini-language compiler + VM</text>
+
+  <!-- Run button -->
+  <rect x="780" y="48" width="96" height="24" rx="4" fill="#22c55e"/>
+  <text x="828" y="65" text-anchor="middle" fill="#052e16" font-size="11" font-weight="600">Run</text>
+
+  <!-- Main content area -->
+  <!-- Left pane: Editor -->
+  <rect x="12" y="84" width="432" height="424" rx="6" fill="#0d1117"/>
+
+  <!-- Editor tab -->
+  <rect x="12" y="84" width="120" height="28" rx="6" fill="#161b22"/>
+  <rect x="12" y="100" width="120" height="12" fill="#161b22"/>
+  <text x="24" y="103" fill="#c9d1d9" font-size="10">factorial.pas</text>
+
+  <!-- Line numbers + code -->
+  <text x="24" y="130" fill="#484f58" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> 1</text>
+  <text x="52" y="130" fill="#ff7b72" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">begin</text>
+
+  <text x="24" y="148" fill="#484f58" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> 2</text>
+  <text x="52" y="148" fill="#79c0ff" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">   integer</text>
+  <text x="122" y="148" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> m;</text>
+
+  <text x="24" y="166" fill="#484f58" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> 3</text>
+  <text x="52" y="166" fill="#79c0ff" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">   integer</text>
+  <text x="122" y="166" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> k;</text>
+
+  <text x="24" y="184" fill="#484f58" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> 4</text>
+  <text x="52" y="184" fill="#79c0ff" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">   integer</text>
+  <text x="122" y="184" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> </text>
+  <text x="130" y="184" fill="#ff7b72" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">function</text>
+  <text x="196" y="184" fill="#d2a8ff" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> f</text>
+  <text x="208" y="184" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">(</text>
+  <text x="216" y="184" fill="#79c0ff" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">integer</text>
+  <text x="272" y="184" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> n);</text>
+
+  <text x="24" y="202" fill="#484f58" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> 5</text>
+  <text x="52" y="202" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">      </text>
+  <text x="88" y="202" fill="#ff7b72" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">begin</text>
+
+  <text x="24" y="220" fill="#484f58" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> 6</text>
+  <text x="52" y="220" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">         </text>
+  <text x="112" y="220" fill="#79c0ff" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">integer</text>
+  <text x="168" y="220" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> n;</text>
+
+  <text x="24" y="238" fill="#484f58" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> 7</text>
+  <text x="52" y="238" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">         </text>
+  <text x="112" y="238" fill="#ff7b72" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">if</text>
+  <text x="128" y="238" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> n&lt;=</text>
+  <text x="156" y="238" fill="#79c0ff" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">0</text>
+  <text x="164" y="238" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> </text>
+  <text x="170" y="238" fill="#ff7b72" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">then</text>
+  <text x="202" y="238" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> f:=</text>
+  <text x="228" y="238" fill="#79c0ff" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">1</text>
+
+  <text x="24" y="256" fill="#484f58" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> 8</text>
+  <text x="52" y="256" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">         </text>
+  <text x="112" y="256" fill="#ff7b72" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">else</text>
+  <text x="144" y="256" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> f:=n*</text>
+  <text x="192" y="256" fill="#d2a8ff" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">f</text>
+  <text x="200" y="256" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">(n-</text>
+  <text x="224" y="256" fill="#79c0ff" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">1</text>
+  <text x="232" y="256" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">)</text>
+
+  <text x="24" y="274" fill="#484f58" font-size="11" font-family="'SF Mono','Cascadia Code',monospace"> 9</text>
+  <text x="52" y="274" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">      </text>
+  <text x="88" y="274" fill="#ff7b72" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">end</text>
+  <text x="112" y="274" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">;</text>
+
+  <text x="24" y="292" fill="#484f58" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">10</text>
+  <text x="52" y="292" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">   </text>
+  <text x="74" y="292" fill="#d2a8ff" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">read</text>
+  <text x="104" y="292" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">(m);</text>
+
+  <text x="24" y="310" fill="#484f58" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">11</text>
+  <text x="52" y="310" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">   k:=</text>
+  <text x="88" y="310" fill="#d2a8ff" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">f</text>
+  <text x="96" y="310" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">(m);</text>
+
+  <text x="24" y="328" fill="#484f58" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">12</text>
+  <text x="52" y="328" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">   </text>
+  <text x="74" y="328" fill="#d2a8ff" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">write</text>
+  <text x="110" y="328" fill="#c9d1d9" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">(k)</text>
+
+  <text x="24" y="346" fill="#484f58" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">13</text>
+  <text x="52" y="346" fill="#ff7b72" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">end</text>
+
+  <!-- Right pane -->
+  <rect x="456" y="84" width="432" height="424" rx="6" fill="#0d1117"/>
+
+  <!-- Output tab -->
+  <rect x="456" y="84" width="90" height="28" rx="6" fill="#161b22"/>
+  <rect x="456" y="100" width="90" height="12" fill="#161b22"/>
+  <text x="468" y="103" fill="#c9d1d9" font-size="10">Output</text>
+
+  <!-- Input label -->
+  <rect x="556" y="84" width="70" height="28" rx="6" fill="#0d1117"/>
+  <text x="568" y="103" fill="#484f58" font-size="10">Input</text>
+
+  <!-- Output content -->
+  <text x="468" y="134" fill="#8b949e" font-size="11" font-family="'SF Mono','Cascadia Code',monospace">stdin: 5</text>
+
+  <line x1="468" y1="146" x2="876" y2="146" stroke="#21262d" stroke-width="1"/>
+
+  <text x="468" y="168" fill="#3fb950" font-size="13" font-family="'SF Mono','Cascadia Code',monospace" font-weight="600">120</text>
+
+  <!-- Status bar -->
+  <rect x="456" y="468" width="432" height="28" rx="0" fill="#161b22"/>
+  <circle cx="472" cy="482" r="4" fill="#3fb950"/>
+  <text x="484" y="486" fill="#8b949e" font-size="10">Compiled &amp; executed in 2ms</text>
+  <text x="820" y="486" fill="#484f58" font-size="10">VM: 24 quads</text>
+
+  <!-- Splitter -->
+  <rect x="448" y="84" width="4" height="424" fill="#21262d"/>
+
+  <!-- "WASM preview" watermark -->
+  <rect x="520" y="260" width="310" height="100" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+  <text x="675" y="296" text-anchor="middle" fill="#484f58" font-size="13" font-weight="600">Playground Preview</text>
+  <text x="675" y="316" text-anchor="middle" fill="#484f58" font-size="10">Build WASM to enable live execution:</text>
+  <text x="675" y="336" text-anchor="middle" fill="#58a6ff" font-size="10" font-family="'SF Mono',monospace">emcmake cmake -B build-web</text>
+  <text x="675" y="350" text-anchor="middle" fill="#58a6ff" font-size="10" font-family="'SF Mono',monospace">emmake make -C build-web minicc</text>
+</svg>
