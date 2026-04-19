@@ -243,3 +243,7 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+
+# CMake
+.cache/
+cmake_test_discovery_*.json
