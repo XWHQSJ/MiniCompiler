@@ -79,15 +79,7 @@ The AST captures declarations, control flow, and expressions as a typed tree tha
   <img src="docs/images/playground_preview.svg" alt="Playground mockup" width="900"/>
 </p>
 
-The web playground compiles the compiler to WASM so it runs entirely in the browser. It is not yet deployed -- to build and serve it locally:
-
-```bash
-emcmake cmake -S . -B build-web
-emmake make -C build-web minicc
-# then open docs/playground.html
-```
-
-Once the gh-pages WASM artifacts are built, the playground will be available at `https://xwhqsj.github.io/MiniCompiler/playground.html`.
+**[Try it online](https://xwhqsj.github.io/MiniCompiler/playground.html)** -- the playground runs in demo mode with pre-computed outputs for the built-in examples. To run arbitrary programs locally with full WASM execution, see [docs/wasm-build.md](docs/wasm-build.md).
 
 ## Directory Layout
 
