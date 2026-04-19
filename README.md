@@ -3,100 +3,112 @@
 ![C++](https://img.shields.io/badge/language-C%2B%2B-blue)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
-A tiny C compiler built from scratch as a learning project. Each stage of the classic compiler pipeline is implemented as a standalone module so you can study, run, and modify them independently.
-
-## About
-
-MiniCompiler walks through the front-end phases of a C compiler:
-
-1. **Preprocessing** -- expanding `#include` directives and macros
-2. **Lexical analysis** -- tokenizing source code into a stream of tokens
-3. **Parsing** -- checking syntactic structure against grammar rules
-4. **Syntax tree construction** -- building and validating the parse tree
-
-The project does **not** generate machine code; it stops after syntax analysis. Its purpose is educational: understanding how each compiler phase works in isolation.
+A tiny compiler for a Pascal-like mini-language. Covers the full pipeline from lexical analysis through to execution on a stack-based virtual machine.
 
 ## Compiler Pipeline
 
 ```
-Source (.c)
-    |
-    v
-PreCompiler  -->  expanded source
-    |
-    v
-Scanner / LexAnalyze  -->  token stream (.dyd)
-    |
-    v
-Parase (Parser)  -->  symbol table (.var), procedure table (.pro)
-    |
-    v
-Syntaxer  -->  syntax tree (.dys)
+source.pas
+   |   lex_pascal
+   v
+Token stream
+   |   Parser (recursive descent)
+   v
+AST (Abstract Syntax Tree)
+   |   SemanticAnalyzer
+   v
+Checked AST
+   |   IRGenerator
+   v
+Three-address IR (quads)
+   |   VM
+   v
+Program output
 ```
-
-> **Note:** The directory `Parase` is a historical misspelling of "Parser". It is kept as-is to preserve git history.
 
 ## Directory Layout
 
 ```
 MiniCompiler/
-├── PreCompiler/          Preprocessor -- handles #include and macro expansion
-│   ├── preCompiler.cpp
-│   ├── 1.c, 2.c, 1.h    Sample input files
-├── LexAnalyze/           Lexical analyzer (C++ / STL version)
-│   ├── lexAnalyze.cpp
-│   ├── lexAnalyze.h
-│   └── test.txt          Sample token input
-├── Scanner/Scanner/      Lexical analyzer (C / file-based version)
-│   ├── lexAnalyze.cpp
-│   └── lexAnalyze.h
-├── Parase/Parase/        Recursive-descent parser
-│   ├── paraser.cpp
-│   └── paraser.h
-├── Syntaxer/Syntaxer/    Syntax analyzer and tree builder
-│   ├── syntaxAnalyze.cpp
-│   └── syntaxAnalyze.h
-├── tree.xml              Example parse-tree output
-├── LICENSE
+├── src/
+│   ├── lexer_pascal/     Pascal-like tokenizer (lex_pascal.h/.cpp)
+│   ├── ast/              AST node types + XML/JSON printers
+│   ├── symtable/         Scoped symbol table (push/pop)
+│   ├── parser/           Recursive-descent parser -> AST
+│   ├── ir/               Three-address IR generator + semantic analysis
+│   ├── vm/               Stack-based virtual machine
+│   └── driver/           Unified CLI entry point (main.cpp)
+├── tests/                GoogleTest suites (lexer, parser, IR, VM)
+│   └── golden/           Golden-file test data
+├── examples/             Sample programs (hello.pas, factorial.pas)
+├── LexAnalyze/           Legacy C-subset lexer (standalone)
+├── PreCompiler/          Legacy preprocessor (standalone)
+├── Scanner/              Legacy Pascal lexer (file-based, standalone)
+├── Parser/               Legacy parser (renamed from Parase)
+├── Syntaxer/             Legacy syntax analyzer (standalone)
+├── CMakeLists.txt        Top-level CMake build
 └── README.md
 ```
 
-## Requirements
+## Build
 
-- A C++ compiler: g++, clang++, or MSVC
-- C++11 or later recommended (C++17 preferred)
-
-## Build and Run
-
-Each module is a self-contained program. Compile and run them individually:
+Requires CMake 3.16+ and a C++17 compiler.
 
 ```bash
-# PreCompiler -- expand includes and macros
-g++ PreCompiler/preCompiler.cpp -std=c++17 -o precompiler
-./precompiler PreCompiler/1.c
-
-# LexAnalyze -- tokenize from file
-g++ LexAnalyze/lexAnalyze.cpp -std=c++17 -o lexanalyze
-./lexanalyze LexAnalyze/test.txt
-
-# Scanner -- alternative lexer (C-style)
-g++ Scanner/Scanner/lexAnalyze.cpp -std=c++17 -o scanner
-./scanner
-
-# Parser -- recursive-descent parse
-g++ Parase/Parase/paraser.cpp -std=c++17 -o parser
-./parser
-
-# Syntaxer -- syntax analysis and tree output
-g++ Syntaxer/Syntaxer/syntaxAnalyze.cpp -std=c++17 -o syntaxer
-./syntaxer
+cmake -S . -B build
+cmake --build build
 ```
 
-**Visual Studio users:** Each subdirectory corresponds to a VS project. Open the `.sln` files directly if they are present, or create a new empty project and add the source files.
+## Run Tests
 
-## Status
+```bash
+ctest --test-dir build --output-on-failure
+```
 
-Educational / experimental. The compiler front-end covers preprocessing through syntax analysis. It does not produce intermediate representation or binary code.
+29 tests cover: lexer (7), parser + golden file (7), semantic analysis + IR (6), VM end-to-end (9).
+
+## CLI Usage
+
+```bash
+# Parse and print AST as XML (default)
+./build/minicc examples/hello.pas
+
+# JSON AST output
+./build/minicc examples/hello.pas --json
+
+# Show token stream
+./build/minicc examples/hello.pas --tokens
+
+# Dump three-address IR
+./build/minicc examples/factorial.pas --ir
+
+# Execute the program on the VM
+echo "5" | ./build/minicc examples/factorial.pas --run
+# => 120
+```
+
+## VM Instruction Reference
+
+| Op          | Description                          |
+|-------------|--------------------------------------|
+| LOAD_CONST  | dst = literal value                  |
+| ASSIGN      | dst = src1                           |
+| ADD/SUB/MUL/DIV | dst = src1 op src2               |
+| LT/LE/GT/GE/EQ/NE | dst = (src1 cmp src2) ? 1 : 0 |
+| JMP         | Unconditional jump to label          |
+| JZ          | Jump to label if src1 == 0           |
+| LABEL       | Named label marker                   |
+| READ        | Read integer from stdin into dst     |
+| WRITE       | Write dst to stdout                  |
+| PARAM       | Push argument onto parameter stack   |
+| CALL        | dst = call src1 with src2 args       |
+| RET         | Return from function                 |
+| FUNC_BEGIN  | Start of function body               |
+| FUNC_END    | End of function body                 |
+
+## Legacy Modules
+
+The top-level directories `LexAnalyze/`, `PreCompiler/`, `Scanner/`, `Parser/`, and `Syntaxer/` are the original standalone modules. They are preserved for reference. The unified pipeline lives under `src/`.
 
 ## License
 
