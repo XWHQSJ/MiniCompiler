@@ -1,9 +1,14 @@
 # MiniCompiler
 
-![C++](https://img.shields.io/badge/language-C%2B%2B-blue)
+[![CI](https://github.com/XWHQSJ/MiniCompiler/actions/workflows/ci.yml/badge.svg)](https://github.com/XWHQSJ/MiniCompiler/actions/workflows/ci.yml)
+[![Release](https://github.com/XWHQSJ/MiniCompiler/actions/workflows/release.yml/badge.svg)](https://github.com/XWHQSJ/MiniCompiler/releases)
+![C++17](https://img.shields.io/badge/C%2B%2B-17-blue)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+![Tests](https://img.shields.io/badge/tests-44%20passing-brightgreen)
 
 A tiny compiler for a Pascal-like mini-language. Covers the full pipeline from lexical analysis through to execution on a stack-based virtual machine.
+
+[**Try online**](https://XWHQSJ.github.io/MiniCompiler/playground.html) | [Language spec](docs/language_spec.md) | [Examples](examples/README.md)
 
 ## Compiler Pipeline
 
@@ -26,6 +31,33 @@ Three-address IR (quads)
 Program output
 ```
 
+## Quick Start
+
+```bash
+cmake -S . -B build
+cmake --build build
+
+# Run the sieve of Eratosthenes
+echo "20" | ./build/minicc examples/sieve.pas --run
+# 2 3 5 7 11 13 17 19
+
+# Compute 2^10
+echo "2 10" | ./build/minicc examples/power.pas --run
+# 1024
+```
+
+## Example Programs
+
+| Program | Description | Input | Output |
+|---------|-------------|-------|--------|
+| `factorial.pas` | Recursive n! | `5` | `120` |
+| `sieve.pas` | Primes up to N | `10` | `2 3 5 7` |
+| `sort.pas` | Sort 3 integers | `3 1 2` | `1 2 3` |
+| `gcd.pas` | Euclidean GCD | `48 18` | `6` |
+| `power.pas` | x^n | `2 10` | `1024` |
+
+See [examples/README.md](examples/README.md) for full input/output tables.
+
 ## Directory Layout
 
 ```
@@ -38,14 +70,12 @@ MiniCompiler/
 │   ├── ir/               Three-address IR generator + semantic analysis
 │   ├── vm/               Stack-based virtual machine
 │   └── driver/           Unified CLI entry point (main.cpp)
-├── tests/                GoogleTest suites (lexer, parser, IR, VM)
+├── tests/                GoogleTest suites (lexer, parser, IR, VM, examples)
 │   └── golden/           Golden-file test data
-├── examples/             Sample programs (hello.pas, factorial.pas)
-├── LexAnalyze/           Legacy C-subset lexer (standalone)
-├── PreCompiler/          Legacy preprocessor (standalone)
-├── Scanner/              Legacy Pascal lexer (file-based, standalone)
-├── Parser/               Legacy parser (renamed from Parase)
-├── Syntaxer/             Legacy syntax analyzer (standalone)
+├── examples/             Sample programs (factorial, sieve, sort, gcd, power)
+├── fuzz/                 libFuzzer targets for lexer and parser
+├── docs/                 Language spec, WASM playground, build docs
+├── .github/workflows/    CI, release binaries, gh-pages deployment
 ├── CMakeLists.txt        Top-level CMake build
 └── README.md
 ```
@@ -65,7 +95,7 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-29 tests cover: lexer (7), parser + golden file (7), semantic analysis + IR (6), VM end-to-end (9).
+44 tests cover: lexer (7), parser + golden file (7), semantic analysis + IR (6), VM end-to-end (9), example programs (15).
 
 ## CLI Usage
 
@@ -87,13 +117,33 @@ echo "5" | ./build/minicc examples/factorial.pas --run
 # => 120
 ```
 
+## Language Features
+
+- Integer arithmetic: `+`, `-`, `*`, `div`, `mod`
+- Comparisons: `=`, `<>`, `<`, `<=`, `>`, `>=`
+- Control flow: `if-then-else`, `while-do`, compound `begin-end` blocks
+- Functions: single-parameter, recursive, integer return
+- I/O: `read(x)`, `write(expr)`
+
+See [docs/language_spec.md](docs/language_spec.md) for the full grammar and limitations.
+
+## Fuzzing
+
+Build fuzz targets with clang:
+
+```bash
+CC=clang CXX=clang++ cmake -S . -B build-fuzz -DENABLE_FUZZ=ON -DMINICC_BUILD_TESTS=OFF
+cmake --build build-fuzz --target fuzz_lexer fuzz_parser
+./build-fuzz/fuzz_lexer corpus/lexer
+```
+
 ## VM Instruction Reference
 
 | Op          | Description                          |
 |-------------|--------------------------------------|
 | LOAD_CONST  | dst = literal value                  |
 | ASSIGN      | dst = src1                           |
-| ADD/SUB/MUL/DIV | dst = src1 op src2               |
+| ADD/SUB/MUL/DIV/MOD | dst = src1 op src2            |
 | LT/LE/GT/GE/EQ/NE | dst = (src1 cmp src2) ? 1 : 0 |
 | JMP         | Unconditional jump to label          |
 | JZ          | Jump to label if src1 == 0           |
