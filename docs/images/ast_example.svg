@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 620" font-family="'Segoe UI',system-ui,-apple-system,sans-serif">
+  <defs>
+    <linearGradient id="abg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <filter id="ns">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="620" rx="12" fill="url(#abg)"/>
+
+  <!-- Title -->
+  <text x="400" y="32" text-anchor="middle" fill="#f8fafc" font-size="16" font-weight="600">AST for factorial(5)</text>
+  <text x="400" y="50" fill="#64748b" font-size="11" text-anchor="middle">echo "5" | ./build/minicc examples/factorial.pas</text>
+
+  <!-- Level 0: Program -->
+  <rect x="340" y="68" width="120" height="32" rx="6" fill="#312e81" stroke="#818cf8" stroke-width="1.5" filter="url(#ns)"/>
+  <text x="400" y="89" text-anchor="middle" fill="#c7d2fe" font-size="12" font-weight="600">Program</text>
+
+  <!-- Edges from Program -->
+  <line x1="370" y1="100" x2="200" y2="130" stroke="#4b5563" stroke-width="1.2"/>
+  <line x1="430" y1="100" x2="600" y2="130" stroke="#4b5563" stroke-width="1.2"/>
+
+  <!-- Level 1: DeclList and StmtList -->
+  <rect x="130" y="130" width="140" height="32" rx="6" fill="#4c1d95" stroke="#a78bfa" stroke-width="1.5" filter="url(#ns)"/>
+  <text x="200" y="151" text-anchor="middle" fill="#ddd6fe" font-size="11" font-weight="600">DeclList</text>
+
+  <rect x="530" y="130" width="140" height="32" rx="6" fill="#4c1d95" stroke="#a78bfa" stroke-width="1.5" filter="url(#ns)"/>
+  <text x="600" y="151" text-anchor="middle" fill="#ddd6fe" font-size="11" font-weight="600">StmtList</text>
+
+  <!-- Edges from DeclList -->
+  <line x1="160" y1="162" x2="80" y2="195" stroke="#4b5563" stroke-width="1.2"/>
+  <line x1="190" y1="162" x2="195" y2="195" stroke="#4b5563" stroke-width="1.2"/>
+  <line x1="220" y1="162" x2="310" y2="195" stroke="#4b5563" stroke-width="1.2"/>
+
+  <!-- Level 2 under DeclList: VarDecl m, VarDecl k, FuncDef f -->
+  <rect x="30" y="195" width="100" height="28" rx="5" fill="#1e3a5f" stroke="#38bdf8" stroke-width="1" filter="url(#ns)"/>
+  <text x="80" y="214" text-anchor="middle" fill="#7dd3fc" font-size="10">VarDecl: m</text>
+
+  <rect x="145" y="195" width="100" height="28" rx="5" fill="#1e3a5f" stroke="#38bdf8" stroke-width="1" filter="url(#ns)"/>
+  <text x="195" y="214" text-anchor="middle" fill="#7dd3fc" font-size="10">VarDecl: k</text>
+
+  <rect x="260" y="195" width="100" height="28" rx="5" fill="#701a75" stroke="#e879f9" stroke-width="1.5" filter="url(#ns)"/>
+  <text x="310" y="214" text-anchor="middle" fill="#f0abfc" font-size="10" font-weight="600">FuncDef: f</text>
+
+  <!-- Edges from FuncDef -->
+  <line x1="280" y1="223" x2="220" y2="258" stroke="#4b5563" stroke-width="1.2"/>
+  <line x1="340" y1="223" x2="400" y2="258" stroke="#4b5563" stroke-width="1.2"/>
+
+  <!-- Level 3 under FuncDef: ParamDecl n, FuncBody -->
+  <rect x="166" y="258" width="108" height="28" rx="5" fill="#1e3a5f" stroke="#38bdf8" stroke-width="1" filter="url(#ns)"/>
+  <text x="220" y="277" text-anchor="middle" fill="#7dd3fc" font-size="10">ParamDecl: n</text>
+
+  <rect x="340" y="258" width="120" height="28" rx="5" fill="#4c1d95" stroke="#a78bfa" stroke-width="1.5" filter="url(#ns)"/>
+  <text x="400" y="277" text-anchor="middle" fill="#ddd6fe" font-size="11" font-weight="600">FuncBody</text>
+
+  <!-- Edge from FuncBody to If -->
+  <line x1="400" y1="286" x2="400" y2="318" stroke="#4b5563" stroke-width="1.2"/>
+
+  <!-- Level 4: If -->
+  <rect x="345" y="318" width="110" height="28" rx="5" fill="#7c2d12" stroke="#fb923c" stroke-width="1.5" filter="url(#ns)"/>
+  <text x="400" y="337" text-anchor="middle" fill="#fdba74" font-size="11" font-weight="600">If</text>
+
+  <!-- Edges from If: condition, then, else -->
+  <line x1="360" y1="346" x2="200" y2="380" stroke="#4b5563" stroke-width="1.2"/>
+  <line x1="400" y1="346" x2="400" y2="380" stroke="#4b5563" stroke-width="1.2"/>
+  <line x1="440" y1="346" x2="620" y2="380" stroke="#4b5563" stroke-width="1.2"/>
+
+  <!-- Level 5: Condition, Then, Else -->
+  <!-- Condition: RelOp <= -->
+  <rect x="140" y="380" width="120" height="28" rx="5" fill="#1e3a5f" stroke="#38bdf8" stroke-width="1" filter="url(#ns)"/>
+  <text x="200" y="399" text-anchor="middle" fill="#7dd3fc" font-size="10">RelOp: &lt;=</text>
+
+  <!-- Then: Assign f := 1 -->
+  <rect x="340" y="380" width="120" height="28" rx="5" fill="#14532d" stroke="#4ade80" stroke-width="1" filter="url(#ns)"/>
+  <text x="400" y="399" text-anchor="middle" fill="#86efac" font-size="10">Assign: f := 1</text>
+
+  <!-- Else: Assign f := n*f(n-1) -->
+  <rect x="545" y="380" width="150" height="28" rx="5" fill="#14532d" stroke="#4ade80" stroke-width="1" filter="url(#ns)"/>
+  <text x="620" y="399" text-anchor="middle" fill="#86efac" font-size="10">Assign: f := n*f(n-1)</text>
+
+  <!-- Edges from RelOp -->
+  <line x1="170" y1="408" x2="130" y2="440" stroke="#4b5563" stroke-width="1.2"/>
+  <line x1="230" y1="408" x2="260" y2="440" stroke="#4b5563" stroke-width="1.2"/>
+
+  <!-- Leaves under RelOp -->
+  <rect x="86" y="440" width="80" height="24" rx="4" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="126" y="456" text-anchor="middle" fill="#94a3b8" font-size="10">Id: n</text>
+
+  <rect x="220" y="440" width="80" height="24" rx="4" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="260" y="456" text-anchor="middle" fill="#94a3b8" font-size="10">IntLit: 0</text>
+
+  <!-- Edges from Else assign -->
+  <line x1="590" y1="408" x2="530" y2="440" stroke="#4b5563" stroke-width="1.2"/>
+  <line x1="650" y1="408" x2="700" y2="440" stroke="#4b5563" stroke-width="1.2"/>
+
+  <!-- Else subtree: BinOp * -->
+  <rect x="490" y="440" width="80" height="24" rx="4" fill="#1e3a5f" stroke="#38bdf8" stroke-width="1"/>
+  <text x="530" y="456" text-anchor="middle" fill="#7dd3fc" font-size="10">Id: n</text>
+
+  <rect x="660" y="440" width="80" height="24" rx="4" fill="#701a75" stroke="#e879f9" stroke-width="1"/>
+  <text x="700" y="456" text-anchor="middle" fill="#f0abfc" font-size="10">Call: f</text>
+
+  <!-- Edge from Call -->
+  <line x1="700" y1="464" x2="700" y2="488" stroke="#4b5563" stroke-width="1.2"/>
+
+  <!-- BinOp - under Call -->
+  <rect x="655" y="488" width="90" height="24" rx="4" fill="#1e3a5f" stroke="#38bdf8" stroke-width="1"/>
+  <text x="700" y="504" text-anchor="middle" fill="#7dd3fc" font-size="10">BinOp: n - 1</text>
+
+  <!-- ---- Right side: StmtList children ---- -->
+  <!-- Edges from StmtList -->
+  <line x1="570" y1="162" x2="520" y2="195" stroke="#4b5563" stroke-width="1.2"/>
+  <line x1="600" y1="162" x2="620" y2="195" stroke="#4b5563" stroke-width="1.2"/>
+  <line x1="640" y1="162" x2="720" y2="195" stroke="#4b5563" stroke-width="1.2"/>
+
+  <!-- Read, Assign k, Write -->
+  <rect x="470" y="195" width="100" height="28" rx="5" fill="#14532d" stroke="#4ade80" stroke-width="1" filter="url(#ns)"/>
+  <text x="520" y="214" text-anchor="middle" fill="#86efac" font-size="10">Read: m</text>
+
+  <rect x="570" y="195" width="100" height="28" rx="5" fill="#14532d" stroke="#4ade80" stroke-width="1" filter="url(#ns)"/>
+  <text x="620" y="214" text-anchor="middle" fill="#86efac" font-size="10">Assign: k=f(m)</text>
+
+  <rect x="680" y="195" width="100" height="28" rx="5" fill="#14532d" stroke="#4ade80" stroke-width="1" filter="url(#ns)"/>
+  <text x="730" y="214" text-anchor="middle" fill="#86efac" font-size="10">Write: k</text>
+
+  <!-- Legend -->
+  <rect x="20" y="545" width="760" height="55" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+
+  <rect x="36" y="558" width="12" height="12" rx="2" fill="#312e81" stroke="#818cf8" stroke-width="1"/>
+  <text x="56" y="569" fill="#94a3b8" font-size="10">Root</text>
+
+  <rect x="110" y="558" width="12" height="12" rx="2" fill="#4c1d95" stroke="#a78bfa" stroke-width="1"/>
+  <text x="130" y="569" fill="#94a3b8" font-size="10">Structural</text>
+
+  <rect x="210" y="558" width="12" height="12" rx="2" fill="#701a75" stroke="#e879f9" stroke-width="1"/>
+  <text x="230" y="569" fill="#94a3b8" font-size="10">Function</text>
+
+  <rect x="310" y="558" width="12" height="12" rx="2" fill="#7c2d12" stroke="#fb923c" stroke-width="1"/>
+  <text x="330" y="569" fill="#94a3b8" font-size="10">Control flow</text>
+
+  <rect x="420" y="558" width="12" height="12" rx="2" fill="#14532d" stroke="#4ade80" stroke-width="1"/>
+  <text x="440" y="569" fill="#94a3b8" font-size="10">Statement</text>
+
+  <rect x="530" y="558" width="12" height="12" rx="2" fill="#1e3a5f" stroke="#38bdf8" stroke-width="1"/>
+  <text x="550" y="569" fill="#94a3b8" font-size="10">Expression / leaf</text>
+
+  <rect x="670" y="558" width="12" height="12" rx="2" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="690" y="569" fill="#94a3b8" font-size="10">Literal</text>
+
+  <!-- Source annotation -->
+  <text x="400" y="607" text-anchor="middle" fill="#334155" font-size="9">Generated from: echo "5" | ./build/minicc examples/factorial.pas</text>
+</svg>
