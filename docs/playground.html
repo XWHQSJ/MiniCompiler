@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MiniCC Playground</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--surface:#1a1d27;--surface2:#252836;--border:#2e3144;
+  --text:#e4e4e7;--muted:#71717a;--accent:#6366f1;--accent2:#818cf8;
+  --green:#22c55e;--red:#ef4444;--font:'JetBrains Mono','Fira Code',monospace;
+}
+html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text)}
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 24px;background:var(--surface);border-bottom:1px solid var(--border);
+}
+header h1{font-size:18px;font-weight:600;letter-spacing:-0.02em}
+header h1 span{color:var(--accent2);font-weight:700}
+.badge{font-size:11px;background:var(--accent);color:#fff;padding:2px 8px;border-radius:9999px;margin-left:8px}
+.toolbar{display:flex;gap:8px;align-items:center}
+.btn{
+  padding:8px 16px;border:none;border-radius:6px;cursor:pointer;
+  font-size:13px;font-weight:600;transition:all .15s;
+}
+.btn-run{background:var(--green);color:#000}
+.btn-run:hover{filter:brightness(1.1)}
+.btn-run:active{transform:scale(.97)}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{color:var(--text);border-color:var(--muted)}
+.btn-ghost.active{color:var(--accent2);border-color:var(--accent)}
+main{display:flex;height:calc(100vh - 49px)}
+.editor-pane{flex:1;display:flex;flex-direction:column;border-right:1px solid var(--border);min-width:0}
+.output-pane{width:380px;display:flex;flex-direction:column;min-width:280px}
+.pane-header{
+  padding:8px 16px;font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--muted);background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.pane-header .status{font-size:11px;font-weight:400;text-transform:none;letter-spacing:0}
+.status.ok{color:var(--green)}
+.status.err{color:var(--red)}
+#editor-container{flex:1;min-height:0}
+#output{
+  flex:1;padding:16px;font-family:var(--font);font-size:13px;line-height:1.6;
+  white-space:pre-wrap;overflow:auto;background:var(--bg);color:var(--text);
+}
+#stdin-row{
+  display:flex;align-items:center;gap:8px;padding:8px 16px;
+  background:var(--surface);border-top:1px solid var(--border);
+}
+#stdin-row label{font-size:12px;color:var(--muted);white-space:nowrap}
+#stdin-input{
+  flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:4px;
+  color:var(--text);font-family:var(--font);font-size:13px;padding:6px 10px;outline:none;
+}
+#stdin-input:focus{border-color:var(--accent)}
+.examples-bar{
+  display:flex;gap:4px;padding:4px 16px;background:var(--surface);border-bottom:1px solid var(--border);
+}
+.ex-btn{
+  padding:4px 10px;font-size:11px;border:1px solid var(--border);border-radius:4px;
+  background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;
+}
+.ex-btn:hover{color:var(--text);border-color:var(--muted)}
+.ex-btn.active{color:var(--accent2);border-color:var(--accent);background:rgba(99,102,241,.08)}
+@media(max-width:768px){
+  main{flex-direction:column}
+  .editor-pane{border-right:none;border-bottom:1px solid var(--border);height:50%}
+  .output-pane{width:100%;height:50%}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1><span>minicc</span> playground<span class="badge">WASM</span></h1>
+  <div class="toolbar">
+    <button class="btn btn-ghost" id="btn-ir" title="Show IR">IR</button>
+    <button class="btn btn-run" id="btn-run" title="Ctrl+Enter">Run</button>
+  </div>
+</header>
+<main>
+  <div class="editor-pane">
+    <div class="examples-bar">
+      <button class="ex-btn active" data-ex="factorial">factorial</button>
+      <button class="ex-btn" data-ex="sieve">sieve</button>
+      <button class="ex-btn" data-ex="sort">sort</button>
+      <button class="ex-btn" data-ex="gcd">gcd</button>
+      <button class="ex-btn" data-ex="power">power</button>
+    </div>
+    <div id="editor-container"></div>
+  </div>
+  <div class="output-pane">
+    <div class="pane-header">
+      Output
+      <span class="status" id="status"></span>
+    </div>
+    <div id="output">Click "Run" or press Ctrl+Enter to execute.</div>
+    <div id="stdin-row">
+      <label for="stdin-input">stdin:</label>
+      <input id="stdin-input" type="text" placeholder="e.g. 5" value="5">
+    </div>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.47.0/min/vs/loader.min.js"></script>
+<script>
+const EXAMPLES = {
+  factorial: {
+    code: `begin
+   integer m;
+   integer k;
+   integer function f(integer n);
+      begin
+         integer n;
+         if n<=0 then f:=1
+         else f:=n*f(n-1)
+      end;
+   read(m);
+   k:=f(m);
+   write(k)
+end`,
+    stdin: '5',
+    output: '120\n'
+  },
+  sieve: {
+    code: `begin
+   integer n;
+   integer i;
+   integer j;
+   integer is_prime;
+   integer has_factor;
+   read(n);
+   i := 2;
+   while i <= n do
+      begin
+         j := 2;
+         has_factor := 0;
+         while j * j <= i do
+            begin
+               if i - (i div j) * j = 0
+                  then has_factor := 1
+                  else has_factor := has_factor + 0;
+               j := j + 1
+            end;
+         if has_factor = 0
+            then write(i)
+            else is_prime := 0;
+         i := i + 1
+      end
+end`,
+    stdin: '20',
+    output: '2\n3\n5\n7\n11\n13\n17\n19\n'
+  },
+  sort: {
+    code: `begin
+   integer a;
+   integer b;
+   integer c;
+   integer t;
+   read(a);
+   read(b);
+   read(c);
+   if a > b then
+      begin t := a; a := b; b := t end
+      else t := 0;
+   if b > c then
+      begin t := b; b := c; c := t end
+      else t := 0;
+   if a > b then
+      begin t := a; a := b; b := t end
+      else t := 0;
+   write(a);
+   write(b);
+   write(c)
+end`,
+    stdin: '3 1 2',
+    output: '1\n2\n3\n'
+  },
+  gcd: {
+    code: `begin
+   integer a;
+   integer b;
+   integer t;
+   read(a);
+   read(b);
+   while b > 0 do
+      begin
+         t := a - (a div b) * b;
+         a := b;
+         b := t
+      end;
+   write(a)
+end`,
+    stdin: '48 18',
+    output: '6\n'
+  },
+  power: {
+    code: `begin
+   integer x;
+   integer n;
+   integer result;
+   integer i;
+   read(x);
+   read(n);
+   result := 1;
+   i := 0;
+   while i < n do
+      begin
+         result := result * x;
+         i := i + 1
+      end;
+   write(result)
+end`,
+    stdin: '2 10',
+    output: '1024\n'
+  }
+};
+
+let editor;
+let currentExample = 'factorial';
+let wasmReady = false;
+
+require.config({paths:{vs:'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.47.0/min/vs'}});
+
+require(['vs/editor/editor.main'], function() {
+  monaco.editor.defineTheme('minicc-dark', {
+    base: 'vs-dark',
+    inherit: true,
+    rules: [
+      {token:'keyword',foreground:'818cf8',fontStyle:'bold'},
+      {token:'number',foreground:'22c55e'},
+      {token:'delimiter',foreground:'71717a'},
+      {token:'identifier',foreground:'e4e4e7'},
+      {token:'operator',foreground:'f59e0b'},
+      {token:'comment',foreground:'52525b',fontStyle:'italic'},
+    ],
+    colors: {
+      'editor.background':'#0f1117',
+      'editor.foreground':'#e4e4e7',
+      'editor.lineHighlightBackground':'#1a1d2780',
+      'editorCursor.foreground':'#818cf8',
+      'editor.selectionBackground':'#6366f140',
+    }
+  });
+
+  monaco.languages.register({id:'minipascal'});
+  monaco.languages.setMonarchTokensProvider('minipascal',{
+    keywords:['begin','end','integer','if','then','else','function','read','write','while','do','div','mod'],
+    operators:[':=','<=','>=','<>','<','>','=','+','-','*',';','(',')'],
+    tokenizer:{
+      root:[
+        [/[a-zA-Z_]\w*/,{cases:{'@keywords':'keyword','@default':'identifier'}}],
+        [/\d+/,'number'],
+        [/:=|<=|>=|<>/,'operator'],
+        [/[+\-*;()<=>,]/,'delimiter'],
+        [/\{[^}]*\}/,'comment'],
+      ]
+    }
+  });
+
+  editor = monaco.editor.create(document.getElementById('editor-container'), {
+    value: EXAMPLES.factorial.code,
+    language: 'minipascal',
+    theme: 'minicc-dark',
+    minimap:{enabled:false},
+    fontSize: 14,
+    fontFamily: "'JetBrains Mono','Fira Code',monospace",
+    lineNumbers: 'on',
+    scrollBeyondLastLine: false,
+    automaticLayout: true,
+    padding:{top:12},
+    renderLineHighlight: 'gutter',
+  });
+
+  document.getElementById('stdin-input').value = EXAMPLES.factorial.stdin;
+
+  editor.addAction({
+    id:'run-program',
+    label:'Run Program',
+    keybindings:[monaco.KeyMod.CtrlCmd|monaco.KeyCode.Enter],
+    run: runProgram
+  });
+});
+
+document.querySelectorAll('.ex-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.ex-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentExample = btn.dataset.ex;
+    const ex = EXAMPLES[currentExample];
+    editor.setValue(ex.code);
+    document.getElementById('stdin-input').value = ex.stdin;
+    document.getElementById('output').textContent = 'Click "Run" or press Ctrl+Enter to execute.';
+    document.getElementById('status').textContent = '';
+    document.getElementById('status').className = 'status';
+  });
+});
+
+document.getElementById('btn-run').addEventListener('click', runProgram);
+
+let showIR = false;
+document.getElementById('btn-ir').addEventListener('click', () => {
+  showIR = !showIR;
+  document.getElementById('btn-ir').classList.toggle('active', showIR);
+});
+
+function runProgram() {
+  const code = editor.getValue();
+  const stdin = document.getElementById('stdin-input').value;
+  const outEl = document.getElementById('output');
+  const statusEl = document.getElementById('status');
+
+  if (wasmReady && typeof Module !== 'undefined') {
+    try {
+      Module.FS.writeFile('/input.pas', code);
+      Module.FS.writeFile('/stdin.txt', stdin);
+      const args = showIR ? ['minicc','/input.pas','--ir'] : ['minicc','/input.pas','--run'];
+      const result = Module.callMain(args);
+      const output = Module.FS.readFile('/dev/stdout',{encoding:'utf8'});
+      outEl.textContent = output || '(no output)';
+      statusEl.textContent = 'exit ' + result;
+      statusEl.className = 'status ' + (result === 0 ? 'ok' : 'err');
+    } catch (e) {
+      outEl.textContent = 'Error: ' + e.message;
+      statusEl.textContent = 'error';
+      statusEl.className = 'status err';
+    }
+  } else {
+    // Demo mode: use pre-computed outputs
+    const ex = EXAMPLES[currentExample];
+    if (ex && code.trim() === ex.code.trim() && stdin.trim() === ex.stdin.trim()) {
+      outEl.textContent = ex.output;
+      statusEl.textContent = 'demo mode (WASM not loaded)';
+      statusEl.className = 'status ok';
+    } else {
+      outEl.textContent = 'WASM runtime not available.\n\nTo run arbitrary programs, build minicc.wasm locally.\nSee docs/wasm-build.md for instructions.\n\nPre-computed outputs are available for the built-in examples\nwith their default inputs.';
+      statusEl.textContent = 'no wasm';
+      statusEl.className = 'status err';
+    }
+  }
+}
+</script>
+</body>
+</html>
