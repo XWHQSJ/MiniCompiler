@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Program text="program" line="1">
+  <DeclList text="" line="2">
+    <VarDecl text="x" line="2" />
+  </DeclList>
+  <StmtList text="" line="3">
+    <Read text="" line="3">
+      <Id text="x" line="3" />
+    </Read>
+    <Write text="" line="4">
+      <Id text="x" line="4" />
+    </Write>
+  </StmtList>
+</Program>
